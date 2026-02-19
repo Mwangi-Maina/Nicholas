@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Blog — Nicholas Mwangi Maina</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+          --bg: #0a0a0f;
+          --surface: #111118;
+          --border: rgba(255,255,255,0.07);
+          --accent: #00e5a0;
+          --accent2: #5b8aff;
+          --text: #e8e8f0;
+          --muted: #6b6b80;
+          --font-display: 'Syne', sans-serif;
+          --font-mono: 'DM Mono', monospace;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+          background: var(--bg);
+          color: var(--text);
+          font-family: var(--font-mono);
+          font-size: 15px;
+          line-height: 1.7;
+          overflow-x: hidden;
+        }
+
+        body::before {
+          content: '';
+          position: fixed;
+          inset: 0;
+          background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+          pointer-events: none;
+          z-index: 1000;
+          opacity: 0.4;
+        }
+
+        body::after {
+          content: '';
+          position: fixed;
+          inset: 0;
+          background-image:
+            linear-gradient(rgba(0,229,160,0.03) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(0,229,160,0.03) 1px, transparent 1px);
+          background-size: 60px 60px;
+          pointer-events: none;
+          z-index: 0;
+        }
+
+        /* NAV */
+        nav {
+          position: fixed;
+          top: 0; left: 0; right: 0;
+          z-index: 100;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 1.2rem 4rem;
+          background: rgba(10,10,15,0.88);
+          backdrop-filter: blur(12px);
+          border-bottom: 1px solid var(--border);
+        }
+
+        .nav-logo {
+          font-family: var(--font-display);
+          font-weight: 800;
+          font-size: 1.1rem;
+          color: var(--accent);
+          letter-spacing: -0.02em;
+          text-decoration: none;
+        }
+
+        .nav-links {
+          display: flex;
+          gap: 2rem;
+          list-style: none;
+        }
+
+        .nav-links a {
+          color: var(--muted);
+          text-decoration: none;
+          font-size: 0.75rem;
+          letter-spacing: 0.1em;
+          text-transform: uppercase;
+          transition: color 0.2s;
+        }
+
+        .nav-links a:hover { color: var(--accent); }
+        .nav-links a.active { color: var(--accent); }
+
+        /* CONTENT WRAPPER */
+        .content-wrap {
+          max-width: 1200px;
+          margin: 0 auto;
+          padding: 0 4rem;
+        }
+
+        /* SECTION HEADERS */
+        .section-header {
+          display: flex;
+          align-items: center;
+          gap: 1.5rem;
+          margin-bottom: 3.5rem;
+        }
+
+        .section-label {
+          font-size: 0.7rem;
+          letter-spacing: 0.2em;
+          text-transform: uppercase;
+          color: var(--accent);
+          margin-bottom: 0.3rem;
+        }
+
+        .section-title {
+          font-family: var(--font-display);
+          font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+          font-weight: 800;
+          color: #fff;
+          letter-spacing: -0.03em;
+        }
+
+        .section-line { flex: 1; height: 1px; background: var(--border); }
+
+        /* BLOG PAGE */
+        .blog-hero {
+          padding: 10rem 0 4rem;
+          position: relative;
+          z-index: 1;
+        }
+
+        .blog-hero-subtitle {
+          color: var(--muted);
+          font-size: 0.9rem;
+          line-height: 1.9;
+          max-width: 600px;
+        }
+
+        /* BLOG GRID */
+        .blog-section {
+          position: relative;
+          z-index: 1;
+          padding-bottom: 6rem;
+        }
+
+        .blog-grid {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 1.5rem;
+        }
+
+        .blog-card {
+          background: var(--surface);
+          border: 1px solid var(--border);
+          border-radius: 8px;
+          padding: 2.5rem;
+          transition: border-color 0.3s, transform 0.3s;
+          position: relative;
+          overflow: hidden;
+          display: flex;
+          flex-direction: column;
+        }
+
+        .blog-card::before {
+          content: '';
+          position: absolute;
+          top: 0; left: 0; right: 0;
+          height: 2px;
+          background: linear-gradient(90deg, var(--accent), var(--accent2));
+          transform: scaleX(0);
+          transform-origin: left;
+          transition: transform 0.4s ease;
+        }
+
+        .blog-card:hover { border-color: rgba(0,229,160,0.3); transform: translateY(-4px); }
+        .blog-card:hover::before { transform: scaleX(1); }
+
+        .blog-card-meta {
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+          margin-bottom: 1rem;
+        }
+
+        .blog-card-date {
+          font-size: 0.72rem;
+          color: var(--muted);
+          letter-spacing: 0.08em;
+        }
+
+        .blog-card-category {
+          font-size: 0.68rem;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+          padding: 0.2rem 0.7rem;
+          border-radius: 100px;
+          background: rgba(0,229,160,0.08);
+          border: 1px solid rgba(0,229,160,0.25);
+          color: var(--accent);
+        }
+
+        .blog-card-category.blue {
+          background: rgba(91,138,255,0.08);
+          border-color: rgba(91,138,255,0.25);
+          color: var(--accent2);
+        }
+
+        .blog-card-title {
+          font-family: var(--font-display);
+          font-size: 1.25rem;
+          font-weight: 700;
+          color: #fff;
+          margin-bottom: 0.8rem;
+          line-height: 1.4;
+        }
+
+        .blog-card-excerpt {
+          color: var(--muted);
+          font-size: 0.85rem;
+          line-height: 1.9;
+          margin-bottom: 1.5rem;
+          flex: 1;
+        }
+
+        .blog-card-link {
+          color: var(--accent);
+          text-decoration: none;
+          font-size: 0.78rem;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+          transition: color 0.2s;
+          align-self: flex-start;
+        }
+
+        .blog-card-link:hover { color: #00ffb3; }
+
+        /* FEATURED POST */
+        .blog-featured {
+          grid-column: 1 / -1;
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 2.5rem;
+          align-items: center;
+        }
+
+        .blog-featured .blog-card-content {
+          display: flex;
+          flex-direction: column;
+        }
+
+        .blog-featured-visual {
+          background: var(--bg);
+          border: 1px solid var(--border);
+          border-radius: 8px;
+          height: 260px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 3rem;
+          color: var(--accent);
+          opacity: 0.3;
+        }
+
+        .blog-featured-badge {
+          font-size: 0.65rem;
+          letter-spacing: 0.15em;
+          text-transform: uppercase;
+          color: var(--accent);
+          margin-bottom: 0.5rem;
+        }
+
+        /* FOOTER */
+        footer {
+          position: relative;
+          z-index: 1;
+          text-align: center;
+          padding: 2rem;
+          border-top: 1px solid var(--border);
+          color: var(--muted);
+          font-size: 0.75rem;
+          letter-spacing: 0.05em;
+        }
+
+        /* ANIMATIONS */
+        @keyframes fadeUp {
+          from { opacity: 0; transform: translateY(24px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+
+        .reveal {
+          opacity: 0;
+          transform: translateY(28px);
+          transition: opacity 0.7s ease, transform 0.7s ease;
+        }
+
+        .reveal.visible { opacity: 1; transform: none; }
+
+        /* RESPONSIVE */
+        @media (max-width: 900px) {
+          nav { padding: 1rem 1.5rem; }
+          .nav-links { gap: 1rem; }
+          .nav-links a { font-size: 0.65rem; }
+          .content-wrap { padding-left: 1.5rem; padding-right: 1.5rem; }
+          .blog-hero { padding: 8rem 0 3rem; }
+          .blog-grid { grid-template-columns: 1fr; }
+          .blog-featured { grid-template-columns: 1fr; }
+          .blog-featured-visual { height: 180px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+    <a href="index.html" class="nav-logo">NM/</a>
+    <ul class="nav-links">
+        <li><a href="index.html#about">About</a></li>
+        <li><a href="index.html#experience">Experience</a></li>
+        <li><a href="index.html#skills">Skills</a></li>
+        <li><a href="index.html#education">Education</a></li>
+        <li><a href="blog.html" class="active">Blog</a></li>
+        <li><a href="index.html#contact">Contact</a></li>
+    </ul>
+</nav>
+
+<!-- BLOG HERO -->
+<section class="blog-hero">
+    <div class="content-wrap">
+        <div class="section-header reveal">
+            <div>
+                <div class="section-label">// Blog</div>
+                <h1 class="section-title">Thoughts & Insights</h1>
+            </div>
+            <div class="section-line"></div>
+        </div>
+        <p class="blog-hero-subtitle reveal">
+            Writing about technology, software development, data science, and lessons learned throughout my career in ICT.
+        </p>
+    </div>
+</section>
+
+<!-- BLOG POSTS -->
+<section class="blog-section">
+    <div class="content-wrap">
+        <div class="blog-grid">
+
+            <!-- Featured Post -->
+            <div class="blog-card blog-featured reveal">
+                <div class="blog-featured-visual">{ }</div>
+                <div class="blog-card-content">
+                    <div class="blog-featured-badge">Featured Post</div>
+                    <div class="blog-card-meta">
+                        <span class="blog-card-date">February 15, 2026</span>
+                        <span class="blog-card-category blue">AI & Data Science</span>
+                    </div>
+                    <h2 class="blog-card-title">Getting Started with My MSc in Artificial Intelligence & Data Science</h2>
+                    <p class="blog-card-excerpt">
+                        Reflections on beginning my master's programme at Keele University, covering the transition from industry to academia, key modules I'm exploring, and what excites me most about the intersection of AI and real-world applications.
+                    </p>
+                    <a href="#" class="blog-card-link">Read More &rarr;</a>
+                </div>
+            </div>
+
+            <!-- Post 2 -->
+            <div class="blog-card reveal">
+                <div class="blog-card-meta">
+                    <span class="blog-card-date">January 28, 2026</span>
+                    <span class="blog-card-category">IT Support</span>
+                </div>
+                <h3 class="blog-card-title">Lessons from the Help Desk: Problem-Solving in IT Support</h3>
+                <p class="blog-card-excerpt">
+                    IT support is more than fixing computers. Here are the key problem-solving frameworks and communication strategies I developed while working as an IT Admin at Simba Telecom.
+                </p>
+                <a href="#" class="blog-card-link">Read More &rarr;</a>
+            </div>
+
+            <!-- Post 3 -->
+            <div class="blog-card reveal">
+                <div class="blog-card-meta">
+                    <span class="blog-card-date">January 10, 2026</span>
+                    <span class="blog-card-category blue">Software Dev</span>
+                </div>
+                <h3 class="blog-card-title">What I Learned as a Junior Developer at Kyosk</h3>
+                <p class="blog-card-excerpt">
+                    From daily stand-ups to writing clean code, my experience as a junior software developer taught me valuable lessons about teamwork, code quality, and growing in a fast-paced tech environment.
+                </p>
+                <a href="#" class="blog-card-link">Read More &rarr;</a>
+            </div>
+
+            <!-- Post 4 -->
+            <div class="blog-card reveal">
+                <div class="blog-card-meta">
+                    <span class="blog-card-date">December 20, 2025</span>
+                    <span class="blog-card-category">Networking</span>
+                </div>
+                <h3 class="blog-card-title">A Beginner's Guide to Network Infrastructure Maintenance</h3>
+                <p class="blog-card-excerpt">
+                    Maintaining network infrastructure is critical for business continuity. This post covers the fundamentals of network management, troubleshooting common issues, and best practices I follow.
+                </p>
+                <a href="#" class="blog-card-link">Read More &rarr;</a>
+            </div>
+
+            <!-- Post 5 -->
+            <div class="blog-card reveal">
+                <div class="blog-card-meta">
+                    <span class="blog-card-date">December 5, 2025</span>
+                    <span class="blog-card-category blue">Data Analysis</span>
+                </div>
+                <h3 class="blog-card-title">Using Data to Improve IT Operations</h3>
+                <p class="blog-card-excerpt">
+                    How I leveraged data analysis techniques to identify patterns in support tickets, reduce recurring issues, and improve overall efficiency within the IT department.
+                </p>
+                <a href="#" class="blog-card-link">Read More &rarr;</a>
+            </div>
+
+            <!-- Post 6 -->
+            <div class="blog-card reveal">
+                <div class="blog-card-meta">
+                    <span class="blog-card-date">November 18, 2025</span>
+                    <span class="blog-card-category">Career</span>
+                </div>
+                <h3 class="blog-card-title">Transitioning from Kenya to the UK for Graduate Studies</h3>
+                <p class="blog-card-excerpt">
+                    The journey of moving abroad to pursue higher education, including the application process, cultural adjustments, and advice for anyone considering a similar path.
+                </p>
+                <a href="#" class="blog-card-link">Read More &rarr;</a>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<footer>
+    <span style="color: var(--accent);">Nicholas Mwangi Maina</span>
+    &nbsp;&middot;&nbsp; IT Support &nbsp;|&nbsp; Software Developer &nbsp;|&nbsp; Data Analyst
+    &nbsp;&middot;&nbsp;&copy; 2026
+</footer>
+
+<script>
+    // Reveal on scroll
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry, i) => {
+        if (entry.isIntersecting) {
+          setTimeout(() => entry.target.classList.add('visible'), i * 80);
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.08 });
+    reveals.forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
